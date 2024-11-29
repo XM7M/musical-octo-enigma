@@ -1,4 +1,4 @@
-{
+8{
   "name": "24-voice-account",
   "version": "0.1.0",
   "description": "24-voice-account",
@@ -11,7 +11,8 @@
     "discord.js-selfbot-v13": "^3.4.4",
     "express": "^4.21.1"
   },
+{
   "engines": {
-    "node": "16.x"
+    "node": ">=16.x"
   }
 }
