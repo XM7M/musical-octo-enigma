@@ -1,38 +1,53 @@
-const express = require("express")
+// ===== إعداد سيرفر 24 ساعة =====
+const express = require("express");
 const app = express();
-var listener = app.listen(process.env.PORT || 2000, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+const listener = app.listen(process.env.PORT || 2000, () => {
+  console.log("✅ Web server running on port " + listener.address().port);
 });
-app.listen(() => console.log("I'm Ready To Work..! 24H"));
-app.get('/', (req, res) => {
-  res.send(`
-  <body>
-  <center><h1>Bot 24H ON!</h1></center
-  </body>`)
+app.get("/", (req, res) => {
+  res.send(`<center><h1>Bot 24H ON!</h1></center>`);
 });
 
-const { Client } = require('discord.js-selfbot-v13');
-const client = new Client({checkUpdate:false});
+// ===== إعداد بوت Discord الرسمي =====
+const { Client, GatewayIntentBits } = require("discord.js");
+const { joinVoiceChannel, getVoiceConnection } = require("@discordjs/voice");
+require("dotenv").config();
 
-client.on('ready', async () => {
-  console.log(`${client.user.username} is ready!`);
-})
-//ثبات فويس 24 ساعه v13 بدون اي مشاكل
-const { joinVoiceChannel } = require('@discordjs/voice');
-client.on('ready', () => {
-    
-    setInterval( async () => {
-    client.channels.fetch(process.env.channel) 
-     .then((channel) => { 
-      const VoiceConnection = joinVoiceChannel({
-       channelId: channel.id, 
-       guildId: process.env.guild, 
-       selfMute: true,
-       selfDeaf: true,
-       adapterCreator: channel.guild.voiceAdapterCreator 
-       });
-    }).catch((error) => { return; });
-    }, 1000)
-}); 
-//https://ra3dstudio.com CopyRight Codes
-client.login(process.env.token);
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
+
+client.once("ready", async () => {
+  console.log(`🤖 Logged in as ${client.user.tag}`);
+
+  // ثبات البوت في الروم الصوتي
+  const channelId = process.env.channel; // ضع ID الروم الصوتي في .env
+  const guildId = process.env.guild; // ضع ID السيرفر في .env
+
+  try {
+    const channel = await client.channels.fetch(channelId);
+    if (!channel || channel.type !== 2) {
+      console.log("⚠️ القناة غير صالحة أو ليست قناة صوتية");
+      return;
+    }
+
+    joinVoiceChannel({
+      channelId: channel.id,
+      guildId: guildId,
+      adapterCreator: channel.guild.voiceAdapterCreator,
+      selfMute: true,
+      selfDeaf: true,
+    });
+
+    console.log(`🎧 Joined voice channel ${channel.name} and staying 24/7`);
+  } catch (err) {
+    console.error("❌ فشل في الانضمام إلى الروم الصوتي:", err);
+  }
+});
+
+client.login(process.env.TOKEN);
