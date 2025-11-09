@@ -10,9 +10,8 @@ app.get('/', (req, res) => {
   <center><h1>Bot 24H ON!</h1></center
   </body>`)
 });
-
 const { Client } = require('discord.js-selfbot-v13');
-const client = new Client({checkUpdate:false});
+const client = new Client({checkUpdate:false}); 
 
 client.on('ready', async () => {
   console.log(`${client.user.username} is ready!`);
